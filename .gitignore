@@ -1,0 +1,7 @@
+env
+.env.local
+.env.development
+.env.production
+
+# Specific configuration files with secrets
+backend/backend/settings_local.py
