@@ -12,6 +12,8 @@ import {
     SIGNUP_START,
     SIGNUP_SUCCESS,
     SIGNUP_FAIL,
+    ACTIVATION_FAIL,
+    ACTIVATION_SUCCESS,
     LOGOUT,
     PASSWORD_RESET_SUCCESS,
     PASSWORD_RESET_FAIL,
@@ -77,6 +79,34 @@ export const signup = (userData) => async (dispatch) => {
         return false;
     }
 };
+
+
+export const verify = (uid, token) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ uid, token });
+
+    try {
+        const res = await api.post('/api/auth/users/activation/', body, config);
+        dispatch({
+            type: ACTIVATION_SUCCESS,
+            payload: res.data
+        });
+        return true;
+    } catch (err) {
+        console.error('Activation failed:', err.response?.data || err.message);
+        dispatch({
+            type: ACTIVATION_FAIL,
+            payload: err.response?.data
+        });
+        return false;
+    }
+};
+
 
 
 export const login = ({email, password}) => async (dispatch) => {

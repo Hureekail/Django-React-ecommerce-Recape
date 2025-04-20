@@ -49,6 +49,7 @@ export default function Header(props) {
             </ul>
             <FaShoppingCart onClick={() => setCartOpen(cartOpen = !cartOpen)} className={`shop-cart-button ${cartOpen && 'active'}`}/>
 
+
               {cartOpen && (
                 <div className='shop-cart'>
                   {props.orders.length > 0 ?

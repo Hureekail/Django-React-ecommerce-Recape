@@ -9,7 +9,8 @@ const Register = () => {
     const { loading, error } = useSelector(state => state.auth);
     
     const [formData, setFormData] = useState({
-        name: '',
+        first_name: '',
+        last_name: '',
         email: '',
         password: '',
         re_password: ''
@@ -38,9 +39,18 @@ const Register = () => {
                 <input
                     className='form-control mb-3'
                     type='text'
-                    placeholder='name'
-                    name='name'
-                    value={formData.name}
+                    placeholder='First name'
+                    name='first_name'
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    required
+                />
+                <input
+                    className='form-control mb-3'
+                    type='text'
+                    placeholder='Last name'
+                    name='last_name'
+                    value={formData.last_name}
                     onChange={handleChange}
                     required
                 />

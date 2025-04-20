@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { login } from '../components/auth'
-import api from "../api";
 import GoogleAuth from '../components/GoogleAuth';
 
 const Login = () => {
