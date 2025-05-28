@@ -45,7 +45,7 @@ export default function Header(props) {
             <ul className='nav'>
                 <Link to="/About">About</Link>
                 <Link to="/contact">Contact</Link>
-                {localStorage.getItem(ACCES_TOKEN) ? <Link to="/profile">Profile</Link> : <Link to="/login">Login</Link>}
+                {localStorage.getItem(ACCES_TOKEN) ? <Link to="/settings">Settings</Link> : <Link to="/login">Login</Link>}
             </ul>
             <FaShoppingCart onClick={() => setCartOpen(cartOpen = !cartOpen)} className={`shop-cart-button ${cartOpen && 'active'}`}/>
 

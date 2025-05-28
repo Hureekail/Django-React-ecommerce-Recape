@@ -12,9 +12,10 @@ import Activate from "./pages/Activate"
 
 import GoogleAuth from "./components/GoogleAuth";
 
-import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import { GlobalAlert } from "./components/Alert";
 
 import { Provider } from 'react-redux';
 import store from "./store";
@@ -26,6 +27,7 @@ function App() {
     >
       <Provider store={store}>
         <Router>
+          <GlobalAlert />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -36,7 +38,7 @@ function App() {
 
             <Route path="/google" element={<GoogleAuth />} />
 
-            <Route path="/profile" element={<Profile/>} />
+            <Route path="/settings" element={<Settings/>} />
             <Route path="/contact" element={<Contact/>} />
             <Route path="/about" element={<About/>} />
           </Routes>

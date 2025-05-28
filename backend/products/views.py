@@ -6,9 +6,13 @@ from rest_framework.response import Response
 from .models import Product, ProductCategory, Order
 from .serializers import ProductSerializer, ProductCategorySerializer, OrderAddSerializer
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 class ProductListView(APIView):
     permission_classes = [AllowAny]
 
+    @method_decorator(cache_page(60 * 60, key_prefix='product_list'))
     def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
@@ -18,6 +22,7 @@ class ProductListView(APIView):
 class ProductCategoryView(APIView):
     permission_classes = [AllowAny]
 
+    @method_decorator(cache_page(60 * 60, key_prefix='product_category_list'))
     def get(self, request):
         products = ProductCategory.objects.all()
         serializer = ProductCategorySerializer(products, many=True)

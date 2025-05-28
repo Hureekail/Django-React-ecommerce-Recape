@@ -21,6 +21,8 @@ import {
     PASSWORD_RESET_CONFIRM_FAIL,
     GOOGLE_AUTH_SUCCESS,
     GOOGLE_AUTH_FAIL,
+    DELETE_PROFILE_FAIL,
+    DELETE_PROFILE_SUCCESS,
 } from "./types"
 
 
@@ -220,3 +222,39 @@ export const googleAuth = (state, code) => async dispatch => {
         }
     }
 };
+
+
+export const DeleteProfile = () => async (dispatch) => {
+    const csrfToken = Cookies.get('csrftoken');
+    const accessToken = localStorage.getItem(ACCES_TOKEN);
+
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        try {
+            await api.delete('/api/accounts/delete-profile/', {
+                withCredentials: true,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Authorization': `JWT ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            dispatch({ type: DELETE_PROFILE_SUCCESS });
+            dispatch(logout());
+        } catch (error) {
+            console.error('Error deleting profile:', error);
+            dispatch({ 
+                type: DELETE_PROFILE_FAIL,
+                payload: error.response?.data || 'Failed to delete profile'
+            });
+        }
+    }
+};
+
+
+/// export const ChangeEmail = (new_email, password) => async (dispatch) => {
+///    try {
+///        await api.post('api/accounts/change-email', {
+            
+///       })
+///    }
+///}

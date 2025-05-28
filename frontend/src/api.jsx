@@ -12,7 +12,7 @@ api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem(ACCES_TOKEN);
         if (token) {
-            config.headers.Authorization = `Barer ${token}`
+            config.headers.Authorization = `Bearer ${token}`
         }
 
         const csrfToken = Cookies.get('csrftoken');
