@@ -249,12 +249,3 @@ export const DeleteProfile = () => async (dispatch) => {
         }
     }
 };
-
-
-/// export const ChangeEmail = (new_email, password) => async (dispatch) => {
-///    try {
-///        await api.post('api/accounts/change-email', {
-            
-///       })
-///    }
-///}

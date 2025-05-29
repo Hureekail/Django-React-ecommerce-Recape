@@ -2,13 +2,15 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import ResetPassword from "./pages/ResetPassword"
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm"
 import Activate from "./pages/Activate"
+import ChangeName from "./pages/ChangeName"
+import ChangeEmail from "./pages/ChangeEmail"
+import VerifyEmail from "./pages/VerifyEmail"
 
 import GoogleAuth from "./components/GoogleAuth";
 
@@ -35,6 +37,9 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/password/reset/confirm/:uid/:token" element={<ResetPasswordConfirm />} />
             <Route path="/activate/:uid/:token" element={<Activate />} />
+            <Route path="/change-name" element={<ChangeName />} />
+            <Route path="/change-email" element={<ChangeEmail />} />
+            <Route path="/verify-email/:uidb64/:token" element={<VerifyEmail />} />
 
             <Route path="/google" element={<GoogleAuth />} />
 

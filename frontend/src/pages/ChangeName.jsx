@@ -4,16 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MdArrowBackIosNew } from "react-icons/md";
 import api from '../api';
 import '../styles/input.css';
-import { GrNext } from "react-icons/gr";
-import { CHANGE_EMAIL_START, CHANGE_EMAIL_START_FAIL } from '../components/types';
 
-const ChangeEmail = () => {
+import { GrNext } from "react-icons/gr";
+
+
+
+const ChangeName = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const user = useSelector(state => state.auth.user);
+    const [error, setError] = useState('');
     
     const [formData, setFormData] = useState({
-        new_email: '',
+        first_name: user?.first_name || '',
+        last_name: user?.last_name || '',
         password: ''
     });
 
@@ -21,21 +24,18 @@ const ChangeEmail = () => {
         e.preventDefault();
 
         try {
-            await api.post('/api/accounts/change-email/', {
-                new_email: formData.new_email,
+            await api.patch('/api/accounts/update-name/', {
+                first_name: formData.first_name,
+                last_name: formData.last_name,
                 current_password: formData.password
             }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            dispatch({ 
-                type: CHANGE_EMAIL_START
-            });
-        } catch (err) {
-            dispatch({ 
-                type: CHANGE_EMAIL_START_FAIL,
-            });
+            navigate('/settings');
+        } catch (error) {
+            setError(error.response?.data?.detail || 'Failed to update name');
         }
     };
 
@@ -52,17 +52,28 @@ const ChangeEmail = () => {
                 <MdArrowBackIosNew className="back w-5 h-5"/>
             </Link>
             <div className="flex flex-col items-center justify-center">
-                <h3 className='mb-5'>Change Email</h3>
-                <form onSubmit={handleSubmit}>
+                <h3 className='mb-5'>Change Name</h3>
+                {error && <div className="alert alert-danger">{error}</div>}
+                <form onSubmit={handleSubmit} >
                     <div className="group">
                         <input className='input-bar'
-                            type='email'
-                            name='new_email'
-                            value={formData.new_email}
+                            type='text'
+                            name='first_name'
+                            value={formData.username}
                             onChange={handleChange}
                             required
                         />
-                        <label>New Email</label>
+                        <label> First Name </label>
+                    </div>
+                    <div className="group">
+                        <input className='input-bar'
+                            type='text'
+                            name='last_name'
+                            value={formData.username}
+                            onChange={handleChange}
+                            required
+                        />
+                        <label> Last Name </label>
                     </div>
                     <div className="group">
                         <input className='input-bar'
@@ -72,10 +83,10 @@ const ChangeEmail = () => {
                             onChange={handleChange}
                             required
                         />
-                        <label>Confirm Password</label>
+                        <label> Confirm Password </label>
                     </div>
                     <button className='press float-right flex items-center justify-end' type='submit'>
-                        Send Verification
+                        Update Name
                         <GrNext className="w-4 h-4 ml-1"/>
                     </button>
                 </form>
@@ -84,4 +95,4 @@ const ChangeEmail = () => {
     );
 };
 
-export default ChangeEmail;
+export default ChangeName; 

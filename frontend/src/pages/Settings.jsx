@@ -30,6 +30,14 @@ const Settings = () => {
         }, 100);
     };
 
+    const handleChangeName = () => {
+        navigate('/change-name');
+    };
+
+    const handleChangeEmail = () => {
+        navigate('/change-email');
+    };
+
     return (
         <div>
             <div className='settings'>
@@ -39,12 +47,12 @@ const Settings = () => {
 
                 <h4 className="text-center cursor-default">Settings</h4>
 
-                <div className="press border-b border-gray-200 p-4 flex justify-between">
+                <div onClick={handleChangeEmail} className="press border-b border-gray-200 p-4 flex justify-between">
                     <b className="">Change my Email</b>
                     <GrNext className="w-5 h-5"/>
                 </div>
                 
-                <div className="press border-b border-gray-200 p-4 flex justify-between">
+                <div onClick={handleChangeName} className="press border-b border-gray-200 p-4 flex justify-between">
                     <b className="">Change my Name</b>
                     <GrNext className="w-5 h-5"/>
                 </div>
