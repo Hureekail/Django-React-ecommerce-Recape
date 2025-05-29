@@ -3,6 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { login } from '../components/auth'
 import GoogleAuth from '../components/GoogleAuth';
+import '../styles/input.css';
+import '../styles/settings.css';
+import { GrNext } from "react-icons/gr";
+
+
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -41,33 +46,38 @@ const Login = () => {
 
 
     return (
-        <div className="container mt-5">
-            <h1>Sign In</h1>
-            <p>Sign into your account</p>
-            <form onSubmit={e => onSubmit(e)}>
-                <div className="form-group">
-                    <input
-                    type="email"
-                    className="form-control mb-3"
-                    name="email"
-                    value={email}
-                    onChange={e => onChange(e)}
-                    placeholder="Email"
-                    required />
-                </div>
-                <div className="form-group">
-                    <input
-                    type="password"
-                    className="form-control mb-3"
-                    name="password"
-                    value={password}
-                    onChange={e => onChange(e)}
-                    minLength='6'
-                    placeholder="Password"
-                    required />
-                </div>
-                <button type="submit" className="btn btn-primary">Login</button>
-            </form>
+        <div className="settings">
+            <div className='flex flex-col items-center justify-center'>
+                <h1>Sign In</h1>
+                <form onSubmit={e => onSubmit(e)}>
+                    <div className="group mt-3">
+                        <input 
+                        type="email"
+                        className="input-bar"
+                        name="email"
+                        value={email}
+                        onChange={e => onChange(e)}
+                        required />
+                        <label>Email</label>
+                    </div>
+                    <div className="group">
+                        <input
+                        type="password"
+                        className="input-bar"
+                        name="password"
+                        value={password}
+                        onChange={e => onChange(e)}
+                        minLength='6'
+                        required />
+                        <label>Password</label>
+                    </div>
+                    <button className='press float-right flex items-center justify-end' type='submit'>
+                        Submit
+                        <GrNext className="w-4 h-4 ml-1"/>
+                    </button>
+                </form>
+            </div>
+
             <div className="mt-3">
                 <p>Or sign in with:</p>
                 <GoogleAuth />

@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { reset_password_confirm } from '../components/auth'
 
+import '../styles/input.css';
+import '../styles/settings.css';
+import { GrNext } from "react-icons/gr";
 
 const ResetPasswordConfirm = () => {
     const [requestSent, setRequestSent] = useState(false)
@@ -45,32 +48,37 @@ const ResetPasswordConfirm = () => {
     }
 
     return (
-        <div className="container mt-5">
-            <h1>Password Reset:</h1>
+        <div className="settings">
             <form onSubmit={e => onSubmit(e)}>
-                <div className="form-group">
-                    <input
-                    type="password"
-                    className="form-control mb-3"
-                    name="new_password"
-                    value={new_password}
-                    onChange={e => onChange(e)}
-                    minLength='6'
-                    placeholder="New Password"
-                    required />
+                <div className='flex flex-col items-center justify-center'>
+                    <h3>Password Reset:</h3>
+                    <div className="group mt-4">
+                        <input
+                        type="password"
+                        className="input-bar"
+                        name="new_password"
+                        value={new_password}
+                        onChange={e => onChange(e)}
+                        minLength='6'
+                        required />
+                        <label> New Password </label>
+                    </div>
+                    <div className="group">
+                        <input
+                        type="password"
+                        className="input-bar"
+                        name="re_new_password"
+                        value={re_new_password}
+                        onChange={e => onChange(e)}
+                        minLength='6'
+                        required />
+                        <label> Confirm New Password </label>
+                    </div>
                 </div>
-                <div className="form-group">
-                    <input
-                    type="password"
-                    className="form-control mb-3"
-                    name="re_new_password"
-                    value={re_new_password}
-                    onChange={e => onChange(e)}
-                    minLength='6'
-                    placeholder="Confirm New Password"
-                    required />
-                </div>
-                <button type="submit" className="btn btn-primary">Reset Password</button>
+                <button className='press float-right flex items-center justify-end' type='submit'>
+                    Submit
+                    <GrNext className="w-4 h-4 ml-1"/>
+                </button>
             </form>
         </div>
     )

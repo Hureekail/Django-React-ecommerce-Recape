@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { reset_password } from '../components/auth'
 
+import '../styles/input.css';
+import '../styles/settings.css';
+import { GrNext } from "react-icons/gr";
+
 const ResetPassword = ({ reset_password, passwordResetSuccess }) => {
     const [requestSent, setRequestSent] = useState(false);
     const [formData, setFormData] = useState({
@@ -31,22 +35,27 @@ const ResetPassword = ({ reset_password, passwordResetSuccess }) => {
     }, [requestSent]);
 
     return (
-        <div className="container mt-5">
-            <h1>Request Password Reset:</h1>
-            {passwordResetSuccess && <div className="alert alert-success">Password reset successful!</div>}
+        <div className="settings ">
             <form onSubmit={onSubmit}>
-                <div className="form-group">
-                    <input
-                        type="email"
-                        className="form-control mb-3"
-                        name="email"
-                        value={email}
-                        onChange={onChange}
-                        placeholder="Email"
-                        required
-                    />
+                <div className='flex flex-col items-center justify-center'>
+                    <h3>Request Password Reset:</h3>
+                    <div className="group mt-4">
+                        <input
+                            type="email"
+                            className="input-bar"
+                            name="email"
+                            value={email}
+                            onChange={onChange}
+                            required
+                        />
+                        <label>Email</label>
+                    </div>
                 </div>
-                <button type="submit" className="btn btn-primary">Reset Password</button>
+
+                <button className='press float-right flex items-center justify-end' type='submit'>
+                    Submit
+                    <GrNext className="w-4 h-4 ml-1"/>
+                </button>
             </form>
         </div>
     );
