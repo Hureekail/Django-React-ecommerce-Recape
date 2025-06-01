@@ -25,6 +25,8 @@ import {
     VERIFY_NEW_EMAIL_SUCCESS,
     VERIFY_NEW_EMAIL_FAIL,
     CHANGE_EMAIL_START_FAIL,
+    CONTACT_SUCCESS,
+    CONTACT_FAIL,
 } from '../components/types';
 
 const initialState = {
@@ -181,7 +183,18 @@ export default function authReducer(state = initialState, action) {
                 ...state,
                 alert: { message: payload?.detail ||  'Something went wrong. Please try again later.', type:'danger' }
             }
+        case CONTACT_SUCCESS:
+            return {
+                ...state,
+                alert: { message: 'Message sent successfully!', type:'success' }
+            }
+        case CONTACT_FAIL:
+            return {
+                ...state,
+                alert: { message: payload?.detail || 'Something went wrong. Please try again later.', type:'danger' }
+            }
         default:
             return state
+        
     }
 };

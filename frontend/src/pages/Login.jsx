@@ -1,11 +1,14 @@
+import { FcGoogle } from "react-icons/fc"; 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { login } from '../components/auth'
-import GoogleAuth from '../components/GoogleAuth';
 import '../styles/input.css';
 import '../styles/settings.css';
 import { GrNext } from "react-icons/gr";
+import axios from 'axios';
+
+import Cookies from 'js-cookie';
 
 
 
@@ -37,6 +40,60 @@ const Login = () => {
         }
     };
 
+    const continueWithGoogle = async () => {
+        console.log('Starting Google authentication...');
+        try {
+            const redirectUri = 'http://localhost:5173/google';
+            console.log('Redirect URI:', redirectUri);
+            
+            const config = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': Cookies.get('csrftoken')
+                },
+                withCredentials: true
+            };
+            
+            const url = `${import.meta.env.VITE_API_URL}/api/auth/o/google-oauth2/?redirect_uri=${redirectUri}`;
+            console.log('Making request to:', url);
+            
+            const res = await axios.get(url, config);
+            
+            console.log('Full response:', res);
+            console.log('Response data:', res.data);
+            console.log('Response type:', typeof res.data);
+            
+            if (typeof res.data === 'string') {
+                console.log('Response is HTML, trying to parse it');
+                // If response is HTML, try to find the authorization URL in it
+                const match = res.data.match(/authorization_url["']:\s*["']([^"']+)["']/);
+                if (match) {
+                    console.log('Found authorization URL in HTML:', match[1]);
+                    window.location.replace(match[1]);
+                    return;
+                }
+            }
+            
+            if (res.data.authorization_url) {
+                console.log('Authorization URL found:', res.data.authorization_url);
+                window.location.replace(res.data.authorization_url);
+            } else {
+                console.error('No authorization URL in response. Response data:', res.data);
+            }
+        } catch (err) {
+            console.error('Google auth error:', err);
+            if (err.response) {
+                console.error('Error response data:', err.response.data);
+                console.error('Error response status:', err.response.status);
+                console.error('Error response headers:', err.response.headers);
+            } else if (err.request) {
+                console.error('Error request:', err.request);
+            } else {
+                console.error('Error message:', err.message);
+            }
+        }
+    };
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -78,9 +135,8 @@ const Login = () => {
                 </form>
             </div>
 
-            <div className="mt-3">
-                <p>Or sign in with:</p>
-                <GoogleAuth />
+            <div className="press btn bg-transparent border border-gray-300 flex justify-start" onClick={continueWithGoogle}>
+                <p className='flex items-center' >Or sign in with:   <FcGoogle className="w-8 h-8"/></p>
             </div>
             <p className="mt-3">
                 Don't have an account? <Link to="/register">Sign Up</Link>

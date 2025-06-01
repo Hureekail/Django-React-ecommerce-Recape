@@ -160,4 +160,28 @@ class VerifyEmailView(APIView):
             status=status.HTTP_200_OK
         )
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class ContactView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            user = request.user
+            message = request.data.get('message')
+                
+            send_mail(
+                f'New Contact Form Submission from {user.get_full_name()}',
+                f'''
+                Email: {user.email}
+                Message: {message}
+                ''',
+                settings.EMAIL_HOST_USER,
+                [settings.EMAIL_HOST_USER],
+                fail_silently=False,
+            )
+            
+            return Response({'detail': 'Message sent successfully'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     

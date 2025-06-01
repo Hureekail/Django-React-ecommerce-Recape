@@ -1,5 +1,5 @@
 from django.urls import include, path
-from .views import csrf_token_view, GetCSRFToken, DeleteProfileView, UpdateNameView, UpdateEmailView, VerifyEmailView
+from .views import csrf_token_view, GetCSRFToken, DeleteProfileView, UpdateNameView, UpdateEmailView, VerifyEmailView, ContactView
 
 urlpatterns = [
     path('auth/', include('djoser.urls')),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('accounts/update-name/', UpdateNameView.as_view(), name="update-name"),
     path('accounts/change-email/', UpdateEmailView.as_view(), name="change-email"),
     path('accounts/verify-email/<str:uidb64>/<str:token>/', VerifyEmailView.as_view(), name="verify-email"),
+    path('accounts/contact/', ContactView.as_view(), name="contact"),
 ]

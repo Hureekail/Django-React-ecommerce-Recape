@@ -23,6 +23,8 @@ import {
     GOOGLE_AUTH_FAIL,
     DELETE_PROFILE_FAIL,
     DELETE_PROFILE_SUCCESS,
+    AUTHENTICATED_FAIL,
+    AUTHENTICATED_SUCCESS,
 } from "./types"
 
 
@@ -48,7 +50,7 @@ export const load_user = () => async dispatch => {
         }; 
 
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users/me/`, config);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/users/me/`, config);
     
             dispatch({
                 type: USER_LOADED_SUCCESS,
@@ -193,32 +195,48 @@ export const reset_password_confirm = (uid, token, new_password, re_new_password
 
 export const googleAuth = (state, code) => async dispatch => {
     if (state && code && !localStorage.getItem('access')) {
-        const config = {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        };
-
-        const details = {
-            'state': state,
-            'code': code
-        };
-
-        const formBody = Object.keys(details).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key])).join('&');
-
         try {
-            const res = await api.post(`${import.meta.env.VITE_API_URL}/auth/o/google-oauth2/?${formBody}`, config);
+            console.log('Starting Google auth with state:', state);
+            await initializeCsrf();
+            
+            const csrfToken = Cookies.get('csrftoken');
+            console.log('Using CSRF token:', csrfToken);
+            
+            const config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                withCredentials: true
+            };
+
+            const formBody = new URLSearchParams({
+                'state': state,
+                'code': code
+            }).toString();
+
+            console.log('Making request with form body:', formBody);
+
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/o/google-oauth2/`, formBody, config);
+            console.log('Google auth response:', res.data);
 
             dispatch({
                 type: GOOGLE_AUTH_SUCCESS,
                 payload: res.data
             });
-
             dispatch(load_user());
+            return true;
         } catch (err) {
+            console.error('Google auth error:', err);
+            if (err.response) {
+                console.error('Error response:', err.response.data);
+                console.error('Error status:', err.response.status);
+                console.error('Error headers:', err.response.headers);
+            }
             dispatch({
                 type: GOOGLE_AUTH_FAIL
             });
+            return false;
         }
     }
 };
@@ -247,5 +265,42 @@ export const DeleteProfile = () => async (dispatch) => {
                 payload: error.response?.data || 'Failed to delete profile'
             });
         }
+    }
+};
+
+
+export const checkAuthenticated = () => async dispatch => {
+    if (localStorage.getItem('access')) {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }; 
+
+        const body = JSON.stringify({ token: localStorage.getItem('access') });
+
+        try {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/jwt/verify/`, body, config)
+
+            if (res.data.code !== 'token_not_valid') {
+                dispatch({
+                    type: AUTHENTICATED_SUCCESS
+                });
+            } else {
+                dispatch({
+                    type: AUTHENTICATED_FAIL
+                });
+            }
+        } catch (err) {
+            dispatch({
+                type: AUTHENTICATED_FAIL
+            });
+        }
+
+    } else {
+        dispatch({
+            type: AUTHENTICATED_FAIL
+        });
     }
 };

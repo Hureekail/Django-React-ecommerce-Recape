@@ -12,7 +12,6 @@ import ChangeName from "./pages/ChangeName"
 import ChangeEmail from "./pages/ChangeEmail"
 import VerifyEmail from "./pages/VerifyEmail"
 
-import GoogleAuth from "./components/GoogleAuth";
 
 import Settings from "./pages/Settings";
 import About from "./pages/About";
@@ -22,31 +21,34 @@ import { GlobalAlert } from "./components/Alert";
 import { Provider } from 'react-redux';
 import store from "./store";
 
+import GoogleAuth from "./components/GoogleAuth";
+
+
 function App() {
   return (
     <GoogleOAuthProvider 
-      clientId="340850506135-go43tci2hl4pp7tsv806s43gj06jp004.apps.googleusercontent.com"
+      clientId="340850506135-ffsf31ctbl0pa4d3dcqebfalb743hnus.apps.googleusercontent.com"
     >
       <Provider store={store}>
         <Router>
-          <GlobalAlert />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/password/reset/confirm/:uid/:token" element={<ResetPasswordConfirm />} />
-            <Route path="/activate/:uid/:token" element={<Activate />} />
-            <Route path="/change-name" element={<ChangeName />} />
-            <Route path="/change-email" element={<ChangeEmail />} />
-            <Route path="/verify-email/:uidb64/:token" element={<VerifyEmail />} />
+            <GlobalAlert />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/password/reset/confirm/:uid/:token" element={<ResetPasswordConfirm />} />
+              <Route path="/activate/:uid/:token" element={<Activate />} />
+              <Route path="/change-name" element={<ChangeName />} />
+              <Route path="/change-email" element={<ChangeEmail />} />
+              <Route path="/verify-email/:uidb64/:token" element={<VerifyEmail />} />
 
-            <Route path="/google" element={<GoogleAuth />} />
+              <Route path="/google" element={<GoogleAuth />} />
 
-            <Route path="/settings" element={<Settings/>} />
-            <Route path="/contact" element={<Contact/>} />
-            <Route path="/about" element={<About/>} />
-          </Routes>
+              <Route path="/settings" element={<Settings/>} />
+              <Route path="/contact" element={<Contact/>} />
+              <Route path="/about" element={<About/>} />
+            </Routes>
         </Router>
       </Provider>
     </GoogleOAuthProvider>
