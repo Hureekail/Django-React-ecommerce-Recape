@@ -5,7 +5,7 @@ import Items from "../components/items";
 import Categories from "../components/Categories";
 import ShowFullItem from "../components/ShowFullItem";
 import SearchBar from "../components/SearchBar";
-import api from "../api";
+import api from "../api.jsx";
 import { connect } from 'react-redux';
 
 class Home extends React.Component {
@@ -23,15 +23,19 @@ class Home extends React.Component {
     this.chooseCategory = this.chooseCategory.bind(this)
     this.onShowItem = this.onShowItem.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
-    this.saveOrdersToDatabase = this.saveOrdersToDatabase.bind(this)
   }
-
 
   componentDidMount() {
     // Load orders from localStorage if they exist
     const savedOrders = localStorage.getItem('guestOrders');
     if (savedOrders) {
       this.setState({ orders: JSON.parse(savedOrders) });
+    }
+
+    // If user is authenticated, load their orders from database
+    if (this.props.isAuthenticated) {
+      localStorage.removeItem('guestOrders');
+      this.loadUserOrders();
     }
 
     api.get("/api/products/")
@@ -49,23 +53,20 @@ class Home extends React.Component {
   componentDidUpdate(prevProps) {
     // Check if user just authenticated
     if (!prevProps.isAuthenticated && this.props.isAuthenticated) {
-      this.saveOrdersToDatabase();
+      this.loadUserOrders();
     }
   }
 
-  saveOrdersToDatabase() {
-    // Save each order to database
-    this.state.orders.forEach(order => {
-      api.post("/api/add-order/", {
-        product_id: order.id
-      })
+  loadUserOrders() {
+    api.get("/api/orders/")
       .then(response => {
-        console.log("Order saved to database:", response.data);
+        // Clear guest orders from localStorage
+        localStorage.removeItem('guestOrders');
+        this.setState({ orders: response.data });
       })
       .catch(error => {
-        console.error("Error saving order to database:", error);
+        console.error("Error loading user orders:", error);
       });
-    });
   }
 
   render() {
@@ -104,7 +105,6 @@ class Home extends React.Component {
   }
 
   chooseCategory(category) {
-
     if(category === 'all') {
       this.setState({currentItems: this.state.items})
       return
@@ -119,11 +119,23 @@ class Home extends React.Component {
     const newOrders = this.state.orders.filter(el => el.id !== id);
     this.setState({ orders: newOrders });
     
-    // Update localStorage
-    localStorage.setItem('guestOrders', JSON.stringify(newOrders));
+    // Update localStorage for non-authenticated users
+    if (!this.props.isAuthenticated) {
+      localStorage.setItem('guestOrders', JSON.stringify(newOrders));
+    } else {
+      // Delete from database for authenticated users
+      api.delete("/api/orders/", {
+        data: { product_id: id }
+      })
+      .then(response => {
+        console.log("Order deleted from database:", response.data);
+      })
+      .catch(error => {
+        console.error("Error deleting order from database:", error);
+      });
+    }
   }
 
-  
   addToOrder(item) {
     let isInArray = false
     this.state.orders.forEach(el => {
@@ -135,10 +147,10 @@ class Home extends React.Component {
       this.setState({orders: newOrders});
       
       // Save to localStorage for non-authenticated users
-      localStorage.setItem('guestOrders', JSON.stringify(newOrders));
-      
-      const accessToken = localStorage.getItem('access')
-      if (accessToken) {
+      if (!this.props.isAuthenticated) {
+        localStorage.setItem('guestOrders', JSON.stringify(newOrders));
+      } else {
+        // Save to database for authenticated users
         api.post("/api/orders/", {
           product_id: item.id
         })

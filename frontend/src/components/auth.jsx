@@ -38,6 +38,23 @@ const initializeCsrf = async () => {
     }
 };
 
+const parseOrder = async () => {
+    // Get guest orders from localStorage
+    const guestOrders = JSON.parse(localStorage.getItem('guestOrders') || '[]');
+            
+    // Save each guest order to the database
+    for (const order of guestOrders) {
+        try {
+            await api.post('api/orders/', {
+                product_id: order.id
+            });
+        } catch (error) {
+            console.error('Error saving order to database:', error);
+        }
+    }
+
+}
+
 
 export const load_user = () => async dispatch => {
     if (localStorage.getItem('access')) {
@@ -71,11 +88,43 @@ export const load_user = () => async dispatch => {
 export const signup = (userData) => async (dispatch) => {
     dispatch({ type: SIGNUP_START });
     try {
-
         await initializeCsrf();
-
         const csrfToken = Cookies.get('csrftoken');
-        const res = await api.post('api/auth/users/', userData, {headers: {'X-CSRFToken': csrfToken}});
+
+        // Create user first
+        const res = await api.post('api/auth/users/', userData, {
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Get guest orders from localStorage
+        const guestOrders = JSON.parse(localStorage.getItem('guestOrders') || '[]');
+        
+        // Save guest orders if any exist
+        if (guestOrders.length > 0) {
+            try {
+                // Save each order with the user's email
+                for (const order of guestOrders) {
+                    await api.post('api/orders/', {
+                        product_id: order.id,
+                        email: userData.email
+                    }, {
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                }
+                // Clear guest orders after successful save
+                localStorage.removeItem('guestOrders');
+            } catch (err) {
+                console.error('Error saving orders:', err);
+                // Don't fail signup if order save fails
+            }
+        }
+
         dispatch({ type: SIGNUP_SUCCESS, payload: res.data });
         return true;
     } catch (err) {
@@ -123,7 +172,6 @@ export const login = ({email, password}) => async (dispatch) => {
         const res = await api.post('api/auth/jwt/create/', body, {headers: {'X-CSRFToken': csrfToken, 'Content-Type': 'application/json'}});
 
         const { access, refresh } = res.data;
-
 
         localStorage.setItem(ACCES_TOKEN, access);
         localStorage.setItem(REFRESH_TOKEN, refresh);
@@ -220,12 +268,40 @@ export const googleAuth = (state, code) => async dispatch => {
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/o/google-oauth2/`, formBody, config);
             console.log('Google auth response:', res.data);
 
+            // Extract user email from response data
+            const userEmail = res.data.user;
+            console.log(userEmail)
+
+            // Get guest orders from localStorage
+            const guestOrders = JSON.parse(localStorage.getItem('guestOrders') || '[]');
+            
+            // Save guest orders if any exist
+            if (guestOrders.length > 0) {
+                try {
+                    // Save each order with the user's email
+                    for (const order of guestOrders) {
+                        await api.post('api/orders/', {
+                            product_id: order.id,
+                            email: userEmail
+                        }, {
+                            headers: {
+                                'X-CSRFToken': csrfToken,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    }
+                    // Clear guest orders after successful save
+                    localStorage.removeItem('guestOrders');
+                } catch (err) {
+                    console.error('Error saving orders:', err);
+                    // Don't fail signup if order save fails
+                }
+            }
             dispatch({
                 type: GOOGLE_AUTH_SUCCESS,
                 payload: res.data
             });
             dispatch(load_user());
-            return true;
         } catch (err) {
             console.error('Google auth error:', err);
             if (err.response) {
@@ -236,7 +312,6 @@ export const googleAuth = (state, code) => async dispatch => {
             dispatch({
                 type: GOOGLE_AUTH_FAIL
             });
-            return false;
         }
     }
 };

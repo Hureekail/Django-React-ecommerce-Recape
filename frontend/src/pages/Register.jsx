@@ -109,7 +109,7 @@ const Register = () => {
                             onChange={handleChange}
                             required
                         />
-                        <label>Email</label>
+                        <label>First Name</label>
                     </div>
                     <div className="group">
                         <input

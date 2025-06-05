@@ -41,7 +41,7 @@ export default function Header(props) {
   return (
     <header>
         <div>
-            <span className='logo'>House Staff</span>
+            <span className='logo'>Recape</span>
             <ul className='nav'>
                 <Link to="/About">About</Link>
                 <Link to="/contact">Contact</Link>
